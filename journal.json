@@ -1,1 +1,1 @@
-{"schemaVersion":"1","account":"digitalocean","records":[]}
+{"schemaVersion":"1","account":"digitalocean","records":[{"version":"1","kind":"intent","account":"digitalocean","attempt":"digitalocean-memory-r0-a1-7391f0cc-3549-415c-a108-a9d8ea651e17","cellId":"digitalocean-memory-r0","planDigest":"sha256:811f8a86beb33fc2338c497de14cbae9ad7bad17b5417b410796d8a4c76afd2c"}]}
