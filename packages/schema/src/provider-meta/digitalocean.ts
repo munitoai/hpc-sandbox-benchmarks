@@ -44,7 +44,7 @@ export default defineProviderMeta("digitalocean", {
 	maturity: {
 		status: "beta",
 		notes:
-			"Public preview (MKC1 only). Validated live: driver-check passes every port check, and the CPU suites ran end to end on the shared toolchain image. Opt-in. The enforced limit is 100 running vCPUs per account (12 concurrent 8 vCPU / 16 GiB MicroVMs), which GET /v2/microvms/options does not report; the memory and disk limits it does report were not enforced.",
+			"Public preview (MKC1 only). Included in the default CPU benchmark selection after a complete DigitalOcean-only run (38723321092: 56/56 cells, 0 gaps, no rate-limit events at 8 concurrent sandboxes). The enforced limit is 100 running vCPUs per account (12 concurrent 8 vCPU / 16 GiB MicroVMs), which GET /v2/microvms/options does not report; the memory and disk limits it does report were not enforced.",
 	},
 	// Fixed vCPU / memory pairs (1/2, 2/4, 8/16, 16/32), each with its own fixed disk.
 	specPinning: "fixed",
