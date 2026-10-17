@@ -11,6 +11,10 @@ It talks to the documented `/v2/microvms` REST API directly. The official TypeSc
 DigitalOcean's OpenAPI spec defines them, but the client has not been regenerated since. Responses
 are parsed with arktype.
 
+DigitalOcean is included in the default CPU benchmark selection (`bench-matrix.yml`); `bench-smoke`
+or the CLI can still select `digitalocean` alone for a targeted run. See the
+[2026-10-17 promotion decision](../../docs/digitalocean-default-matrix-2026-10-17.md).
+
 ## Configuration
 
 - `DIGITAL_OCEAN_TOKEN` (secret): a token with the `microvm:create`, `microvm:read`,
