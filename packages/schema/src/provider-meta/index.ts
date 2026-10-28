@@ -12,6 +12,7 @@ import freestyle from "./freestyle.ts";
 import microsandbox_cloud from "./microsandbox-cloud.ts";
 import modal_gvisor from "./modal-gvisor.ts";
 import modal_vm from "./modal-vm.ts";
+import munito from "./munito.ts";
 import namespace from "./namespace.ts";
 import novita from "./novita.ts";
 import runcloud from "./runcloud.ts";
@@ -35,6 +36,7 @@ const MODULES = {
 	freestyle: freestyle,
 	brezel: brezel,
 	digitalocean: digitalocean,
+	munito: munito,
 } as const satisfies { [P in ProviderId]: ProviderMetaModule<P> };
 
 export const REGISTRY = {
@@ -54,6 +56,7 @@ export const REGISTRY = {
 	freestyle: MODULES.freestyle.meta,
 	brezel: MODULES.brezel.meta,
 	digitalocean: MODULES.digitalocean.meta,
+	munito: MODULES.munito.meta,
 } as const satisfies Record<ProviderId, ProviderMetaSource>;
 
 type IdsWithArtifact<K extends ProviderArtifact["kind"]> = {

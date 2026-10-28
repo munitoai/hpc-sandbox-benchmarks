@@ -518,6 +518,8 @@ export function renderDriversProvenance(root = REPO_ROOT): Map<string, string> {
 		["BREZEL", REGISTRY.brezel.sdkPackage, catalogVersion(catalog, REGISTRY.brezel.sdkPackage)],
 		// No client library covers MicroVMs yet; the adapter targets the documented v2 REST API.
 		["DIGITALOCEAN", REGISTRY.digitalocean.sdkPackage, "v2"],
+		// No client library exists; the adapter targets the documented `/sandboxes/v1` REST API.
+		["MUNITO", REGISTRY.munito.sdkPackage, "v1"],
 	] as const;
 	const packages = new Set(
 		driverFleetProjection(root).moduleIds.map((id) => driverModuleLocation(id).directory),

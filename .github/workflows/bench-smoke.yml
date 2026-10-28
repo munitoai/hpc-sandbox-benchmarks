@@ -25,6 +25,7 @@ on:
           - 'freestyle'
           - 'brezel'
           - 'digitalocean'
+          - 'munito'
           # <<< end generated: provider-options
       suite:
         description: Suite to run

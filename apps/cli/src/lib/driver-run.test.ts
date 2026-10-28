@@ -101,6 +101,7 @@ describe("bench-suite driver vs legacy selection (Phase A unit 1)", () => {
 			"microsandbox-cloud",
 			"modal-gvisor",
 			"modal-vm",
+			"munito",
 			"namespace",
 			"novita",
 			"runcloud",

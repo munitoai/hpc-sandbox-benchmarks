@@ -175,6 +175,7 @@
         "@sandbox-benchmarks/freestyle": "workspace:*",
         "@sandbox-benchmarks/microsandbox-cloud": "workspace:*",
         "@sandbox-benchmarks/modal": "workspace:*",
+        "@sandbox-benchmarks/munito": "workspace:*",
         "@sandbox-benchmarks/namespace": "workspace:*",
         "@sandbox-benchmarks/novita": "workspace:*",
         "@sandbox-benchmarks/runcloud": "workspace:*",
@@ -270,6 +271,20 @@
         "arktype": "catalog:",
         "modal": "catalog:computesdk",
         "nice-grpc": "catalog:computesdk",
+      },
+      "devDependencies": {
+        "@repo/tsconfig": "workspace:*",
+        "@types/bun": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
+    "packages/munito": {
+      "name": "@sandbox-benchmarks/munito",
+      "version": "0.0.0",
+      "dependencies": {
+        "@sandbox-benchmarks/driver": "workspace:*",
+        "@sandbox-benchmarks/schema": "workspace:*",
+        "arktype": "catalog:",
       },
       "devDependencies": {
         "@repo/tsconfig": "workspace:*",
@@ -1017,6 +1032,8 @@
     "@sandbox-benchmarks/microsandbox-cloud": ["@sandbox-benchmarks/microsandbox-cloud@workspace:packages/microsandbox-cloud"],
 
     "@sandbox-benchmarks/modal": ["@sandbox-benchmarks/modal@workspace:packages/modal"],
+
+    "@sandbox-benchmarks/munito": ["@sandbox-benchmarks/munito@workspace:packages/munito"],
 
     "@sandbox-benchmarks/namespace": ["@sandbox-benchmarks/namespace@workspace:packages/namespace"],
 
