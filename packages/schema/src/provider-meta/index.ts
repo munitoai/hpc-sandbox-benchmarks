@@ -19,6 +19,7 @@ import namespace from "./namespace.ts";
 import novita from "./novita.ts";
 import runcloud from "./runcloud.ts";
 import tama from "./tama.ts";
+import tangle from "./tangle.ts";
 import vercel from "./vercel.ts";
 
 const MODULES = {
@@ -41,6 +42,7 @@ const MODULES = {
 	baseten: baseten,
 	createos: createos,
 	munito: munito,
+	tangle: tangle,
 } as const satisfies { [P in ProviderId]: ProviderMetaModule<P> };
 
 export const REGISTRY = {
@@ -63,6 +65,7 @@ export const REGISTRY = {
 	baseten: MODULES.baseten.meta,
 	createos: MODULES.createos.meta,
 	munito: MODULES.munito.meta,
+	tangle: MODULES.tangle.meta,
 } as const satisfies Record<ProviderId, ProviderMetaSource>;
 
 type IdsWithArtifact<K extends ProviderArtifact["kind"]> = {

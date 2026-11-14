@@ -28,6 +28,7 @@ on:
           - 'baseten'
           - 'createos'
           - 'munito'
+          - 'tangle'
           # <<< end generated: provider-options
       suite:
         description: Suite to run

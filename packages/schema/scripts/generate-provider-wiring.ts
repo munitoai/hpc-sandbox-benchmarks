@@ -525,6 +525,7 @@ export function renderDriversProvenance(root = REPO_ROOT): Map<string, string> {
 			catalogVersion(catalog, REGISTRY.createos.sdkPackage),
 		],
 		["MUNITO", REGISTRY.munito.sdkPackage, catalogVersion(catalog, REGISTRY.munito.sdkPackage)],
+		["TANGLE", REGISTRY.tangle.sdkPackage, catalogVersion(catalog, REGISTRY.tangle.sdkPackage)],
 	] as const;
 	const packages = new Set(
 		driverFleetProjection(root).moduleIds.map((id) => driverModuleLocation(id).directory),

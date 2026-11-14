@@ -82,6 +82,7 @@ describe("@sandbox-benchmarks/schema providers", () => {
 			"novita",
 			"runcloud",
 			"tama",
+			"tangle",
 			"vercel",
 		]);
 	});

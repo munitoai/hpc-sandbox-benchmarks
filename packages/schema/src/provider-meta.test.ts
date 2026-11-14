@@ -35,6 +35,7 @@ const REQUIRED_INPUTS = {
 	baseten: ["BASETEN_API_KEY"],
 	createos: ["CREATEOS_API_KEY"],
 	munito: ["MUNITO_API_KEY"],
+	tangle: ["TANGLE_API_KEY"],
 } as const satisfies Record<ProviderId, readonly string[]>;
 
 const ARTIFACT_KINDS = {
@@ -57,6 +58,7 @@ const ARTIFACT_KINDS = {
 	baseten: "baked",
 	createos: "none",
 	munito: "none",
+	tangle: "image",
 } as const satisfies Record<ProviderId, (typeof REGISTRY)[ProviderId]["artifact"]["kind"]>;
 
 const BAKED = {

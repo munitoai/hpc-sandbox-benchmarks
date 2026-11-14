@@ -25,6 +25,7 @@ export const PROVIDER_IDS = [
 	"baseten",
 	"createos",
 	"munito",
+	"tangle",
 ] as const;
 
 export type ProviderId = (typeof PROVIDER_IDS)[number];

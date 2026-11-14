@@ -84,6 +84,7 @@ describe("buildReleasePlan matrix", () => {
 			"baseten",
 			"createos",
 			"munito",
+			"tangle",
 		]);
 	});
 

@@ -242,6 +242,7 @@ Do this in the GitHub UI (Settings → Environments / Rules / Actions), then del
    | `BASETEN_API_KEY` | Baseten Sandboxes provider runtime and validation |
    | `CREATEOS_API_KEY` | CreateOS provider runtime and validation |
    | `MUNITO_API_KEY` | Munito Sandboxes provider runtime and validation |
+   | `TANGLE_API_KEY` | Tangle Sandbox provider runtime and validation |
    <!-- <<< end generated: provider-secrets -->
 
    For Boat, a key created with the `ci` preset is insufficient: that preset omits

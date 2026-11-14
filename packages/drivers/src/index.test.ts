@@ -32,6 +32,7 @@ describe("generated driver loader", () => {
 			"baseten",
 			"createos",
 			"munito",
+			"tangle",
 		]);
 		expect(Object.values(DRIVERS).every((load) => typeof load === "function")).toBe(true);
 		expect(Object.isFrozen(DRIVERS)).toBe(true);
