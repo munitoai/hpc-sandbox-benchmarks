@@ -238,7 +238,6 @@ const retryDelayMs = (retryAfterS: number | undefined) =>
 interface Call {
 	readonly signal?: AbortSignal;
 	readonly timeoutMs: number;
-	readonly idempotencyKey?: string;
 	/** Receives the Retry-After of the call's last answer. */
 	readonly answer?: { retryAfterS?: number };
 }
@@ -260,14 +259,11 @@ export function munitoVendor(
 		.replace(/\/+$/, "")
 		.replace(/\/sandboxes\/v1$/, "");
 	/**
-	 * One SDK call within `timeoutMs` and the caller's signal. The transport carries the bound, and
-	 * a create's Idempotency-Key, to each request. The SDK makes one attempt: the kit and this adapter
-	 * own every retry. A non-2xx answer throws the SDK's `ApiError`.
+	 * One SDK call within `timeoutMs` and the caller's signal, which the transport carries to each
+	 * request. The SDK makes one attempt: the kit and this adapter own every retry. A non-2xx answer
+	 * throws the SDK's `ApiError`.
 	 */
-	const call = <T>(
-		{ signal, timeoutMs, idempotencyKey, answer }: Call,
-		run: (sdk: Client) => Promise<T>,
-	) =>
+	const call = <T>({ signal, timeoutMs, answer }: Call, run: (sdk: Client) => Promise<T>) =>
 		bounded(signal, timeoutMs, (within) =>
 			run(
 				new Client({
@@ -275,16 +271,7 @@ export function munitoVendor(
 					baseUrl,
 					attempts: 1,
 					fetch: (async (input, init) => {
-						const response = await transport(input, {
-							...init,
-							signal: within,
-							...(idempotencyKey !== undefined && {
-								headers: {
-									...(init?.headers as Record<string, string>),
-									"Idempotency-Key": idempotencyKey,
-								},
-							}),
-						});
+						const response = await transport(input, { ...init, signal: within });
 						if (answer) answer.retryAfterS = retryAfterOf(response);
 						return response;
 					}) as typeof globalThis.fetch,
@@ -315,9 +302,8 @@ export function munitoVendor(
 					try {
 						return record(
 							sandbox.assert(
-								await call(
-									{ signal, timeoutMs: MUNITO_CREATE_TIMEOUT_MS, idempotencyKey: marker, answer },
-									(sdk) => sdk.createSandbox(json),
+								await call({ signal, timeoutMs: MUNITO_CREATE_TIMEOUT_MS, answer }, (sdk) =>
+									sdk.createSandbox(json, undefined, marker),
 								),
 							),
 						);
