@@ -50,6 +50,14 @@ Vercel exposes only a vCPU resource knob and derives memory at 2048 MB per vCPU,
 vCPU reaches the 8 GiB target as a coupled point. Its SDK does not expose a disk-size knob; available
 disk is measured in the guest and disk-gated suites skip honestly when the observed mount is too small.
 
+Daytona container-class sandboxes in this org reject disk above 10 GB (`Disk request 40GB exceeds
+maximum allowed per sandbox (10GB)`, toolchain bake 43780173359). `daytona-container` is therefore
+baked and prepared at 10 GiB disk — not the 40 GiB `TARGET_SPEC` that `daytona-vm` and the other
+providers use. CPU and memory stay at 4 vCPU / 8 GiB (`specMatched` still judges only that pair).
+Observed disk is recorded on the Run; suites whose `minDiskGb` exceeds what the guest has free
+(notably `realworld-mastra` at 30 GiB and `realworld-openclaw` at 25 GiB) skip with an Insufficient
+disk coverage gap rather than running as if the 40 GiB target had been honored.
+
 ## Dimensions and metrics
 
 Results land on a closed, ordered set of [`DIMENSIONS`](../packages/schema/src/metrics.ts): `lifecycle`,
@@ -85,9 +93,9 @@ order and the emphasis are editorial, and they follow this document's argument:
 - **Everything else stays expanded.** `lifecycle` and `control-plane` are harness-measured timings of
   the provider's own API — a spawn a user waits on, not a synthetic load — and `economics` is the
   provider's published price. None is a microbenchmark, so none is hidden.
-- **Measured cost follows `economics`, as its own section.** It is the provider's bill for what each
-  sandbox used, not a published price, so it is never ranked in the same table — see
-  [Measured cost on the board](#measured-cost-on-the-board).
+- **`economics` shows cost, not price.** A cost-vs-time scatter of each environment's three-pipeline
+  total leads, then one [cost per pipeline run](#cost-per-pipeline-run) chart per realworld pipeline.
+  The tables and provider bills sit in one fold beneath. No hourly price is shown.
 
 The header links each identifier to its primary source: the run id to the `bench-matrix` workflow run
 that produced the measurements, the commit to the tree they were measured against, and the dataset link
@@ -235,12 +243,12 @@ one sandbox.
 Daytona's daytona-container cell (v0) records `provider_reported` USD from the analytics API
 (allocation × wall clock, no burst). daytona-vm (v2, `DAYTONA_V2_BURST`, Zen 5) records
 `calculated_from_provider_usage`: each usage-history minute is priced at max(measured, guarantee) at
-the dated list rates, CPU at the Zen 5 multiplier. A bill not settled within the hook budget is
+the dated list rates, Zen 5 cores at $0.235/core-hr. A bill not settled within the hook budget is
 recorded `missing`, never zero.
 
 ### Measured cost on the board
 
-The leaderboard renders `costEvidence` in a **Measured cost** section after `economics`, derived from
+The leaderboard renders `costEvidence` in the `economics` section as **Provider bills**, derived from
 the Run alone (`packages/results/src/lib/measured-cost.ts`); nothing about it is stored as a Metric.
 
 - **What the figure is.** One observed record is one sandbox's whole bill as the provider reported it
@@ -253,8 +261,10 @@ the Run alone (`packages/results/src/lib/measured-cost.ts`); nothing about it is
   the shared account.
 - **How it is summarised.** Per provider and suite: the median across measured sandboxes (one
   sandbox, one figure, like every other board value), the lowest and highest bill, and how many of
-  the suite's sandboxes were measured. The realworld suites run their pipeline once per sandbox, so
-  their figure is the measured cost of one pipeline run. A total — per suite, and across the
+  the suite's sandboxes were measured. A realworld sandbox runs its pipeline once, but its bill is
+  not the cost of one pipeline run: it covers the sandbox's whole billed lifetime — boot, toolchain
+  setup, the runner's untimed warm-up of every lint/typecheck/test task, result collection — about
+  2–4× the timed steps on run 43863642458. A total — per suite, and across the
   provider's whole Run — is `providerCostTotal` over the expected cells, so it is printed only when
   every one of them has an observed record.
 - **Which sandboxes are expected.** Every cell with a cost record, plus every cell the Run attributes
@@ -265,13 +275,9 @@ the Run alone (`packages/results/src/lib/measured-cost.ts`); nothing about it is
   makes that sandbox **unmeasured**: it is listed by reason and never enters a median or a total as
   zero. Providers without a cost hook record nothing and do not appear in the section; their only
   cost figures are the catalog economics above it.
-- **How it is drawn.** Each realworld suite with at least one measured pipeline run gets a chart
-  (`docs/figures/measured-cost-<suite>.webp`) in the same section: one bar per provider at its median
-  bill per pipeline run, the whisker from its lowest to its highest bill, cheapest first, and no
-  "best" badge. Providers with cost evidence but no observed bill for that suite are listed under the
-  bars as unmeasured with their reasons. The synthetic suites stay table-only: their per-sandbox bill
-  depends on how long the harness kept sampling, not on a fixed workload. The charts go through the
-  same document → Chrome → WebP pipeline and artifact gate as every other chart.
+- **How it is drawn.** As the Billed bars of the cost-per-pipeline-run charts, each bill scaled to
+  its pipeline's timed share (below). The synthetic suites stay table-only: their per-sandbox bill
+  depends on how long the harness kept sampling.
 - **Why it is not ranked.** Only providers with a sandbox-scoped billing API can appear, and a usage
   bill and a reservation price answer different questions. Putting Modal's bill in the `economics`
   table would rank it against catalog prices that assume an idle-or-full reservation.
@@ -290,6 +296,26 @@ allowance**, not free memory, and monthly pools cannot establish the intrinsic c
 hour. Disk rates and allowances are retained where published but excluded from economics because disk
 is not a benchmark comparison axis and rates are not uniformly available. Economics enriches a
 provider only after it produced at least one measured metric, so it never promotes a pending row.
+
+### Cost per pipeline run
+
+`packages/results/src/lib/pipeline-cost.ts` prices one run of each realworld pipeline per provider:
+the median across sandboxes that completed it, lowest and highest beside it, never ranked. Both
+kinds of row price the same window, the pipeline's timed steps:
+
+- **Billed** where every completed sandbox has a USD bill that records its billed seconds
+  (`BILLED_WALL_SECONDS`): each bill × the sandbox's timed seconds ÷ its billed seconds. That keeps
+  the provider's real billed rate — burst above the reservation included — while dropping the
+  boot, setup and untimed warm-ups the bill also covers. It assumes the rate was even across the
+  sandbox's life; a burst-billed sandbox idle during setup paid less there, so its pipeline share
+  is if anything understated. One bill that cannot be split sends the whole row to the estimate.
+- **Estimated** otherwise: every published per-sandbox on-demand component at the requested size,
+  disk included (`fullHourlyPrice`, narrowed by `fullPriceComponentIds`), × the timed steps. An
+  estimate is _at most_ the billed share when a component bills only while in use, _at least_ when
+  one bills usage above the reservation. Plan fees are excluded.
+
+Terms are defined in
+[`packages/schema/CONTEXT.md`](../packages/schema/CONTEXT.md).
 
 ## Host vs. effective specs (the host-fingerprint caveat)
 
