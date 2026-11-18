@@ -27,6 +27,7 @@ on:
           - 'digitalocean'
           - 'baseten'
           - 'createos'
+          - 'munito'
           - 'tangle'
           # <<< end generated: provider-options
       suite:

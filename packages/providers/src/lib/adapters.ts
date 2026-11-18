@@ -35,6 +35,7 @@ export const MIGRATED_DRIVER_IDS = [
 	"digitalocean",
 	"baseten",
 	"createos",
+	"munito",
 	"tangle",
 ] as const satisfies readonly ProviderId[];
 

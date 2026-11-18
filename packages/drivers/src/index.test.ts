@@ -31,6 +31,7 @@ describe("generated driver loader", () => {
 			"digitalocean",
 			"baseten",
 			"createos",
+			"munito",
 			"tangle",
 		]);
 		expect(Object.values(DRIVERS).every((load) => typeof load === "function")).toBe(true);

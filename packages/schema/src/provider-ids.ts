@@ -24,6 +24,7 @@ export const PROVIDER_IDS = [
 	"digitalocean",
 	"baseten",
 	"createos",
+	"munito",
 	"tangle",
 ] as const;
 
